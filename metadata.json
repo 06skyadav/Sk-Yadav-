@@ -1,0 +1,6 @@
+{
+  "name": "SK Yadav — Full Stack Freelance Developer Platform",
+  "description": "Professional freelancing platform, client dashboard, project case studies, quotation & enquiry management, and AI assistant for Full Stack Web Developer SK Yadav.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

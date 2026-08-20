@@ -1,0 +1,107 @@
+import fs from 'fs';
+import path from 'path';
+import { Resvg } from '@resvg/resvg-js';
+
+const svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <g fill="#000000">
+    <!-- Left Bracket < -->
+    <path d="M 172 70 L 50 195 C 46 199 46 201 50 205 L 172 330 C 178 336 186 333 188 325 C 190 318 184 310 176 304 L 88 200 L 176 96 C 184 90 190 82 188 75 C 186 67 178 64 172 70 Z" />
+
+    <!-- Right Bracket > -->
+    <path d="M 428 70 L 550 195 C 554 199 554 201 550 205 L 428 330 C 422 336 414 333 412 325 C 410 318 416 310 424 304 L 512 200 L 424 96 C 416 90 410 82 412 75 C 414 67 422 64 428 70 Z" />
+
+    <!-- Flowing S: Upper Calligraphic Swirl -->
+    <path d="M 378 36 C 382 54 374 72 342 79 C 298 88 238 102 204 142 C 176 174 174 198 206 208 C 212 210 216 207 214 201 C 196 193 194 175 212 151 C 238 119 292 105 338 97 C 378 89 404 71 384 37 C 382 33 376 33 378 36 Z" />
+
+    <!-- Flowing S: Central Bridge & Spine -->
+    <path d="M 206 206 C 228 206 256 220 286 238 C 334 266 376 270 398 252 C 404 246 406 238 396 232 C 392 230 388 232 388 238 C 374 252 338 248 296 224 C 264 206 234 194 206 194 C 198 194 194 200 198 204 C 200 206 204 206 206 206 Z" />
+
+    <!-- Flowing S: Lower Calligraphic Swoop and Tail -->
+    <path d="M 346 228 C 368 238 398 256 406 280 C 416 308 388 328 340 338 C 286 350 226 364 164 368 C 160 368 158 372 162 374 C 220 372 284 360 344 348 C 400 336 432 310 420 274 C 410 244 374 224 348 214 C 342 212 340 224 346 228 Z" />
+
+    <!-- Classic Serif "K" -->
+    <!-- Vertical Left Stem with Bilateral Serifs -->
+    <path d="M 216 148 L 260 148 L 260 156 L 246 156 L 246 244 L 260 244 L 260 252 L 216 252 L 216 244 L 230 244 L 230 156 L 216 156 Z" />
+
+    <!-- Upper Diagonal Arm with Top Serif -->
+    <path d="M 246 202 L 302 156 L 290 156 L 290 148 L 334 148 L 334 156 L 322 156 L 264 202 Z" />
+
+    <!-- Lower Diagonal Leg with Base Serif -->
+    <path d="M 262 198 L 322 244 L 338 244 L 338 252 L 288 252 L 288 244 L 302 244 L 250 204 Z" />
+  </g>
+</svg>`;
+
+// Also square favicon SVG version (with appropriate padding)
+const faviconSvgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <g transform="translate(0, 100)" fill="#000000">
+    <!-- Left Bracket < -->
+    <path d="M 172 70 L 50 195 C 46 199 46 201 50 205 L 172 330 C 178 336 186 333 188 325 C 190 318 184 310 176 304 L 88 200 L 176 96 C 184 90 190 82 188 75 C 186 67 178 64 172 70 Z" />
+
+    <!-- Right Bracket > -->
+    <path d="M 428 70 L 550 195 C 554 199 554 201 550 205 L 428 330 C 422 336 414 333 412 325 C 410 318 416 310 424 304 L 512 200 L 424 96 C 416 90 410 82 412 75 C 414 67 422 64 428 70 Z" />
+
+    <!-- Flowing S: Upper Calligraphic Swirl -->
+    <path d="M 378 36 C 382 54 374 72 342 79 C 298 88 238 102 204 142 C 176 174 174 198 206 208 C 212 210 216 207 214 201 C 196 193 194 175 212 151 C 238 119 292 105 338 97 C 378 89 404 71 384 37 C 382 33 376 33 378 36 Z" />
+
+    <!-- Flowing S: Central Bridge & Spine -->
+    <path d="M 206 206 C 228 206 256 220 286 238 C 334 266 376 270 398 252 C 404 246 406 238 396 232 C 392 230 388 232 388 238 C 374 252 338 248 296 224 C 264 206 234 194 206 194 C 198 194 194 200 198 204 C 200 206 204 206 206 206 Z" />
+
+    <!-- Flowing S: Lower Calligraphic Swoop and Tail -->
+    <path d="M 346 228 C 368 238 398 256 406 280 C 416 308 388 328 340 338 C 286 350 226 364 164 368 C 160 368 158 372 162 374 C 220 372 284 360 344 348 C 400 336 432 310 420 274 C 410 244 374 224 348 214 C 342 212 340 224 346 228 Z" />
+
+    <!-- Classic Serif "K" -->
+    <!-- Vertical Left Stem with Bilateral Serifs -->
+    <path d="M 216 148 L 260 148 L 260 156 L 246 156 L 246 244 L 260 244 L 260 252 L 216 252 L 216 244 L 230 244 L 230 156 L 216 156 Z" />
+
+    <!-- Upper Diagonal Arm with Top Serif -->
+    <path d="M 246 202 L 302 156 L 290 156 L 290 148 L 334 148 L 334 156 L 322 156 L 264 202 Z" />
+
+    <!-- Lower Diagonal Leg with Base Serif -->
+    <path d="M 262 198 L 322 244 L 338 244 L 338 252 L 288 252 L 288 244 L 302 244 L 250 204 Z" />
+  </g>
+</svg>`;
+
+const publicDir = path.resolve(process.cwd(), 'public');
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir, { recursive: true });
+}
+
+// 1. Write SVG files
+fs.writeFileSync(path.join(publicDir, 'logo.svg'), svgContent);
+fs.writeFileSync(path.join(publicDir, 'favicon.svg'), faviconSvgContent);
+console.log('Written logo.svg and favicon.svg');
+
+// 2. Render logo.png (800 width)
+const resvgLogo = new Resvg(svgContent, {
+  fitTo: { mode: 'width', value: 800 }
+});
+const logoPngData = resvgLogo.render();
+fs.writeFileSync(path.join(publicDir, 'logo.png'), logoPngData.asPng());
+console.log('Rendered public/logo.png');
+
+// 3. Render favicon.png (192x192)
+const resvgFavicon192 = new Resvg(faviconSvgContent, {
+  fitTo: { mode: 'width', value: 192 }
+});
+fs.writeFileSync(path.join(publicDir, 'favicon.png'), resvgFavicon192.render().asPng());
+console.log('Rendered public/favicon.png');
+
+// 4. Render apple-touch-icon.png (180x180)
+const resvgApple = new Resvg(faviconSvgContent, {
+  fitTo: { mode: 'width', value: 180 }
+});
+fs.writeFileSync(path.join(publicDir, 'apple-touch-icon.png'), resvgApple.render().asPng());
+console.log('Rendered public/apple-touch-icon.png');
+
+// 5. Render favicon-32x32.png (32x32)
+const resvgFavicon32 = new Resvg(faviconSvgContent, {
+  fitTo: { mode: 'width', value: 32 }
+});
+fs.writeFileSync(path.join(publicDir, 'favicon-32x32.png'), resvgFavicon32.render().asPng());
+console.log('Rendered public/favicon-32x32.png');
+
+// 6. Also save favicon.ico
+fs.copyFileSync(path.join(publicDir, 'favicon-32x32.png'), path.join(publicDir, 'favicon.ico'));
+console.log('Created public/favicon.ico');
